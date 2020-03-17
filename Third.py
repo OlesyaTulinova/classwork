@@ -1,13 +1,13 @@
 import os
 import sys
-
 import pygame
 import requests
 
 
 def idk(def_coords, def_spn):
     response = None
-    map_request = "https://static-maps.yandex.ru/1.x/?ll=" + def_coords + '&spn=' + def_spn + '&l=map'
+    map_request = "https://static-maps.yandex.ru/1.x/?ll=" + def_coords + '&l=map'
+    print(map_request)
     response = requests.get(map_request)
 
     if not response:
@@ -26,7 +26,6 @@ def idk(def_coords, def_spn):
 cords = input()
 spn = input()
 
-
 pygame.init()
 screen = pygame.display.set_mode((600, 450))
 idk(cords, spn)
@@ -35,6 +34,7 @@ pygame.display.flip()
 running = True
 
 while running:
+    print(cords, spn)
     for event in pygame.event.get():
         if event.type == pygame.QUIT:
             running = False
@@ -49,17 +49,21 @@ while running:
                       str(float(spn.split(',')[1]) - float(spn.split(',')[1]) / 10)
                 flag = True
             elif event.key == pygame.K_LEFT:
-                cords = str(float(cords.split(',')[0]) - float(cords.split(',')[0]) / 10) + ',' + cords.split(',')[1]
+                cords = str((float(cords.split(',')[0]) - float(cords.split(',')[0]) / 10) % 360 - 180) \
+                        + ',' + cords.split(',')[1]
                 flag = True
             elif event.key == pygame.K_RIGHT:
-                cords = str(float(cords.split(',')[0]) + float(cords.split(',')[0]) / 10) + ',' + cords.split(',')[1]
-                flag = True
-            elif event.key == pygame.K_DOWN:
-                cords = cords.split(',')[0] + ',' + str(float(cords.split(',')[1]) + float(cords.split(',')[1]) / 10)
+                cords = str((float(cords.split(',')[0]) + float(cords.split(',')[0]) / 10) % 360 - 180) \
+                        + ',' + cords.split(',')[1]
                 flag = True
             elif event.key == pygame.K_UP:
-                cords = cords.split(',')[0] + ',' + str(float(cords.split(',')[1]) - float(cords.split(',')[1]) / 10)
+                cords = cords.split(',')[0] + ',' + \
+                        str((float(cords.split(',')[1]) + float(cords.split(',')[1]) / 10) % 180 - 90)
+                flag = True
+            elif event.key == pygame.K_DOWN:
+                cords = cords.split(',')[0] + ',' + \
+                        str((float(cords.split(',')[1]) - float(cords.split(',')[1]) / 10) % 180 - 90)
                 flag = True
             if flag:
                 idk(cords, spn)
-        pygame.display.flip()
+    pygame.display.flip()
